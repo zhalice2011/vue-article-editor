@@ -13,6 +13,26 @@
         <!-- Form 组件提供了表单验证的功能，只需要通过 rule 属性传入约定的验证规则，并 Form-Item 的 prop 属性设置为需校验的字段名即可。具体可以参考官网：http://element.eleme.io/#/zh-CN/component/form -->
         <el-col :span="24" class="warp-main">
             <el-form ref="infoForm" :model="infoForm" :rules="rules" label-width="120px">
+            <el-form-item label="新闻类型" prop="newsType">
+                <el-select v-model="infoForm.newsType">
+                    <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="展示渠道" prop="channel">
+                <el-select v-model="infoForm.channel">
+                    <el-option
+                        v-for="item in channels"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item label="标题" prop="title">
                 <el-input v-model="infoForm.title"></el-input>
             </el-form-item>
@@ -22,30 +42,47 @@
             <el-form-item label="时间" prop="time">
                 <el-input v-model="infoForm.time"></el-input>
             </el-form-item>
-            <el-form-item label="region" prop="region">
-                <el-input v-model="infoForm.region"></el-input>
+            <el-form-item label="新闻开头问候语" prop="beginHello">
+                <el-input v-model="infoForm.beginHello"></el-input>
             </el-form-item>
-            <el-form-item label="top" prop="top">
-                <el-input v-model="infoForm.top"></el-input>
+            <el-form-item label="新闻结尾" prop="ending">
+                <el-input v-model="infoForm.ending"></el-input>
             </el-form-item>
-            <el-form-item label="开头" prop="start">
-                <el-input v-model="infoForm.start"></el-input>
-            </el-form-item>
-            <el-form-item label="结尾" prop="end">
-                <el-input v-model="infoForm.end"></el-input>
-            </el-form-item>
-            <el-form-item label="底部时间" prop="endTime">
+            <el-form-item label="底部落款时间" prop="endTime">
                 <el-input v-model="infoForm.endTime"></el-input>
             </el-form-item>
-            <el-form-item label="添加封面">
-                <label class="cover img el-button el-button--primary" v-if="infoForm.cover === ''">
-                    添加封面
-                    <input type="file" @change="upCover" v-if="infoForm.cover === ''" />
+            <el-form-item label="封面内容简介">
+                <el-input v-model="infoForm.summary"></el-input>
+            </el-form-item>
+            <el-form-item label="新闻缩略图">
+                <label class="cover img el-button el-button--primary" v-if="infoForm.newsThumb === ''">
+                    新闻缩略图
+                    <input type="file" @change="upCover" v-if="infoForm.newsThumb === ''" />
                 </label>
-                <div class="flex flex-column" v-if="infoForm.cover !== ''">
-                    <img :src="infoForm.cover" class="rendersrc"/>
+                <div class="flex flex-column" v-if="infoForm.newsThumb !== ''">
+                    <img :src="infoForm.newsThumb" class="rendersrc"/>
                     <el-button class="imgdel imgdel" @click="delCover()">删除</el-button>
                 </div>
+            </el-form-item>
+            <el-form-item label="是否置顶" prop="setTop">
+                <el-select v-model="infoForm.setTop">
+                    <el-option
+                        v-for="item in setTops"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="状态" prop="channel">
+                <el-select v-model="infoForm.status">
+                    <el-option
+                        v-for="item in statuss"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <div v-for="(item,index) in content"  v-if="content" >
                     <el-form-item label="图片" v-if="item.src !== undefined">
@@ -107,16 +144,63 @@
         data() {
         return {
             infoForm: {
+                newsType: '1', // 新闻类型 默认百姓公告
+                channel: '1', // 展示渠道 默认pc
                 title: '',  // 标题
                 subTitle: '',  // 副标题
-                time: new Date().Format("yyyy-MM-dd"),
-                region: '',
-                top: '',
-                start: '', // 开头
-                end: '', // 结尾
+                time: new Date().Format("yyyy-MM-dd"), // 发布时间
+                beginHello: '', // 开头
+                ending: '', // 结尾
                 endTime: '', // 底部时间
-                cover: '',
+                summary: '', // 内容简介，封面内容
+                newsThumb: '', // 封面缩略图
+                setTop: '0', // 是否置顶【0-否，1-是】
+                status: '1', // 状态【0-删除，1-正常】
             },
+            options: [
+                {
+                    value: '1',
+                    label: '百信公告'
+                },
+                {
+                    value: '2',
+                    label: '新闻动态'
+                },
+                {
+                    value: '3',
+                    label: '行业资讯'
+                },
+            ],
+            channels: [
+                {
+                    value: '1',
+                    label: 'PC'
+                },
+                {
+                    value: '2',
+                    label: '手机'
+                },
+            ],
+            setTops: [
+                {
+                    value: '0',
+                    label: '否'
+                },
+                {
+                    value: '1',
+                    label: '是'
+                },
+            ],
+            statuss: [
+                {
+                    value: '1',
+                    label: '正常'
+                },
+                {
+                    value: '0',
+                    label: '删除'
+                },
+            ],
             value: '',
             content: [], // 内容
             editorOption:{
@@ -182,11 +266,11 @@
             let reader = new FileReader();
             reader.readAsDataURL(files); // 这里是最关键的一步，转换就在这里
             reader.onloadend = function() {
-                _self.infoForm.cover = this.result
+                _self.infoForm.newsThumb = this.result
             };
         },
         delCover() {
-            this.infoForm.cover = ''
+            this.infoForm.newsThumb = ''
         },
         onSubmit() {
             this.$refs.infoForm.validate((valid) => {
